@@ -2,7 +2,7 @@
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "f5263d4386183a6aef7e2c41751bbfb25b733240"
+project_hash = "107e95a3970ca1ce7c0ef67e77a56b8006a694a6"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -767,8 +767,10 @@ uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 version = "0.12.3"
 
 [[deps.ParametricAdaptiveSampling]]
-deps = ["DataStructures", "IterTools", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "Test"]
-path = "../ParametricAdaptiveSampling"
+deps = ["DataStructures", "IterTools", "LinearAlgebra", "Test"]
+git-tree-sha1 = "fde033d2831ad0c663e70c3dc48509adb04ddfa4"
+repo-rev = "9cf4ea7705dcb473fca09affaf44c90ff180add1"
+repo-url = "https://github.com/sschuldenzucker/ParametricAdaptiveSampling.jl.git"
 uuid = "227527f0-75d4-4cf7-8f3e-6a1f9a8c20db"
 version = "0.1.0"
 

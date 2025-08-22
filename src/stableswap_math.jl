@@ -1,5 +1,5 @@
 """
-Module for the StableSwap math. This is kept separate from the superstructure in `CalibrationTools` to
+Module for the StableSwap math. This is kept separate from the superstructure in `ConstantFunctionMarketMakers` to
 avoid namespace pollution.
 
 Note that, in contrast to most other AMMs, we don't have formulas based on p as the input variable, only on y.

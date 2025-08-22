@@ -1,5 +1,5 @@
 """
-Module for the ECLP math. This is kept separate from the superstructure in `CalibrationTools` to
+Module for the ECLP math. This is kept separate from the superstructure in `ConstantFunctionMarketMakers` to
 avoid namespace pollution.
 """
 module ECLPMath

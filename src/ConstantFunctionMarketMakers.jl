@@ -1,4 +1,4 @@
-module CalibrationTools
+module ConstantFunctionMarketMakers
 
 export AMM,
     kind_name,
