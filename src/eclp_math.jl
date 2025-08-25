@@ -6,6 +6,7 @@ module ECLPMath
 
 using Test
 using LinearAlgebra
+using ForwardDiff
 using NLsolve
 using Symbolics
 using Nemo  # required for symbolic solve
@@ -113,13 +114,85 @@ end
 
 """
 Calculate the invariant numerically  
+
+BROKEN AND DEPRECATED: This often matches t to the "upper" (concave) part of the ellipse, which is
+not correct, and gives a _too low_ invariant value. See the proof of Prop 13 in the paper. Use `calc_invariant()` instead.
 """
-# TODO run a simple test case to check this actually is fine.
+# TODO remove
 function find_invariant(m::Params, t)
+    Base.depwarn(
+        "`find_invariant()` is deprecated and broken. Use `calc_invariant()` instead.",
+        :find_invariant,
+    )
     res = nlsolve(v -> residual_eclp(m, t, v[1]), [1.0]; autodiff = :forward)
     @assert res.f_converged
     res.zero[1]
 end
+
+function calc_invariant(m::Params, t)
+    # See math paper, section 2.2.1, Prop 13
+    # SOMEDAY probably not the most numerically accurate thing in the world.
+    A = A_mat(m)
+    At = A * t
+    Achi = A * chi(m)
+    AtAchi = At' * Achi
+    AchiAchiMinus1 = Achi' * Achi - 1.0
+
+    radicand = AtAchi^2 - AchiAchiMinus1 * (At' * At)
+    (AtAchi + sqrt(radicand)) / AchiAchiMinus1
+end
+
+function x_y(m::Params, l, y)
+    # See math paper, section 2.2.1, Prop 14
+    # SOMEDAY this doesn't have the best rounding properties in the world.
+    # See the "prec calcs" if this ever matters.
+
+    # Shorthands
+    s, c, lam = m.s, m.c, m.lam
+    lamsub = 1.0 - 1.0 / lam^2
+    a, b = l * chi(m)
+
+    # y prime
+    y1 = y - b
+
+    # x prime
+    radicand = (
+        s^2 * c^2 * lamsub^2 * y1^2 -
+        (1 - lamsub * c^2) * ((1 - lamsub * s^2) * y1^2 - l^2)
+    )
+    x1 = (-s * c * lamsub * y1 - sqrt(radicand)) / (1.0 - lamsub * c^2)
+
+    x = x1 + a
+    x
+end
+
+function y_x(m::Params, l, x)
+    # See math paper, section 2.2.1, Prop 14
+    # SOMEDAY this doesn't have the best rounding properties in the world.
+    # See the "prec calcs" if this ever matters.
+
+    # Shorthands
+    s, c, lam = m.s, m.c, m.lam
+    lamsub = 1.0 - 1.0 / lam^2
+    a, b = l * chi(m)
+
+    # y prime
+    x1 = x - a
+
+    # x prime
+    radicand = (
+        s^2 * c^2 * lamsub^2 * x1^2 -
+        (1 - lamsub * s^2) * ((1 - lamsub * c^2) * x1^2 - l^2)
+    )
+    y1 = (-s * c * lamsub * x1 - sqrt(radicand)) / (1.0 - lamsub * s^2)
+
+    y = y1 + b
+    y
+end
+
+# ------- DEPRECATED AND UNUSED -----------
+# TODO remove
+
 
 # TODO move these to some variables module. They are used in stableswap too.
 _x = Symbolics.variable("x")
@@ -148,6 +221,7 @@ function mk_y_x(m::Params, l)
     x -> Float64(Base.invokelatest(fn, x))
 end
 
+# TODO use forward diff instead
 """
 Liquidity density. Otherwise like `mk_x_y`.
 """

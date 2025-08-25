@@ -35,38 +35,26 @@ alphabeta(eclp::ECLP) = (eclp.params.alpha, eclp.params.beta)
 
 residual(eclp::ECLP, l, t) = ECLPMath.residual_eclp(eclp.params, t, l)
 
-l_t(eclp::ECLP, t) = ECLPMath.find_invariant(eclp.params, t)
+l_t(eclp::ECLP, t) = ECLPMath.calc_invariant(eclp.params, t)
 
 t_l_p(eclp::ECLP, l, p) = ECLPMath.t_l_p(eclp.params, l, p)
 p_l_t(eclp::ECLP, l, t) = ECLPMath.p_l_t(eclp.params, l, t)
 
 function mk_tc(common::TCCommon{ECLP})
     params = common.amm.params
-    ECLPTradingCurve(
-        common,
-        # SOMEDAY we could replace these with the generic solution method used for StableSwap. Should be faster & more stable.
-        ECLPMath.mk_x_y(params, common.l),
-        ECLPMath.mk_y_x(params, common.l),
-        ECLPMath.mk_dydp_p(params, common.l),
-        ECLPMath.t_plus(params, common.l),
-    )
+    ECLPTradingCurve(common, ECLPMath.t_plus(params, common.l))
 end
 
 struct ECLPTradingCurve <: TradingCurve
     common::TCCommon{ECLP}
 
     # Cached results
-    _x_y::Function
-    _y_x::Function
-    _dydp_p::Function
     _t_plus::Vector{Float64}
 end
 
-x_y(tc::ECLPTradingCurve, y) = tc._x_y(y)
-y_x(tc::ECLPTradingCurve, x) = tc._y_x(x)
-dydp_p(tc::ECLPTradingCurve, p) = tc._dydp_p(p)
-
-t_p(tc::ECLPTradingCurve, p) = t_l_p(tc.common.amm, tc.common.l, p)
+x_y(tc::ECLPTradingCurve, y) = ECLPMath.x_y(tc.common.amm.params, tc.common.l, y)
+y_x(tc::ECLPTradingCurve, x) = ECLPMath.y_x(tc.common.amm.params, tc.common.l, x)
+dydp_p(tc::ECLPTradingCurve, p) = ForwardDiff.derivative(p -> t_p(tc, p)[2], p)  # The generic implementation
 
 t_plus(tc::ECLPTradingCurve) = tc._t_plus
 
