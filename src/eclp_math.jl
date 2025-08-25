@@ -96,8 +96,8 @@ function p_l_t(m::Params, l, t)
     A = A_mat(m)
     tpp = A * (t - l * chi(m))
     pc = [tpp[1] / tpp[2], 1]
-    pgx = pc * (A * [1, 0])
-    px = pgx / (pc * (A * [0, 1]))
+    pgx = pc' * (A * [1, 0])
+    px = pgx / (pc' * (A * [0, 1]))
     px
 end
 
