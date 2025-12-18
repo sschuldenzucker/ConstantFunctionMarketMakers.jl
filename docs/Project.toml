@@ -1,0 +1,3 @@
+[deps]
+ConstantFunctionMarketMakers = "f53b5ea5-9312-47a9-8e29-e838c2e5f494"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

@@ -1,0 +1,3 @@
+# Create docs, don't do anything else.
+makedocs:
+    julia --project=. make.jl
