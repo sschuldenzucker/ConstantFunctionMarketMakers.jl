@@ -4,6 +4,19 @@ import .ECLPMath
 
 export ECLP, ECLPTradingCurve
 
+"""
+    ECLP(alpha, beta, q, lambda)
+
+Gyroscope Elliptic Concentrated Liquidity Pool
+
+Here:
+
+- alpha and beta are the price range
+- q is the target price of concentration
+- lambda >= 1 is the amplification factor
+
+See the [Gyroscope docs](https://docs.gyro.finance/pools/e-clps.html).
+"""
 struct ECLP <: AMM
     params::ECLPMath.Params
 end

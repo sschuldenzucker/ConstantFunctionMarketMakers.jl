@@ -1,10 +1,16 @@
 
 export CPSMM, CPSMMTradingCurve
 
-"""
-A constant-power-sum-pool (like YieldSpace) following \$x^delta + y^delta = L^delta\$
+@doc raw"""
+    CPSMM(delta)
 
-where delta is strictly between 0 and 1. delta -> 1 is the constant-sum AMM and delta -> 0 is the CPMM.
+A constant-power-sum-pool (like YieldSpace).
+
+```math
+x^\delta + y^\delta = L^\delta
+```
+
+where $delta$ is strictly between 0 and 1. $delta \to 1$ is the constant-sum AMM and $delta \to 0$ is the [`CPMM`](@ref).
 """
 struct CPSMM <: AMM
     delta::Float64

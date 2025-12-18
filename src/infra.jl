@@ -2,10 +2,7 @@
 AMM base interface. An AMM has parameters applied but has not been initialized at a given liquidity.
 Corresponds to the "CFMM" concept in the liquidity density paper.
 
-Expected Interface:
-- `kind_name(self)::str`
-- `short_str(self, as_bp::bool)::str`
-TODO ^^^
+TODO describe expected interface. Probably in a separate docs page.
 """
 abstract type AMM end
 
@@ -51,7 +48,7 @@ end
     alpha, beta = alphabeta(amm)
     alpha, beta = alphabeta(tc)
 
-The lower and upper end of the price range, or (0.0, Inf).
+The lower and upper end of the price range, or `(0.0, Inf)`.
 
 Required for AMMs with concentrated price range.
 """
@@ -59,7 +56,7 @@ alphabeta(::AMM) = (0.0, Inf)
 # The defaults are full range. AMMs need to override this if not.
 
 """
-    t_l_p(::AMM, l, p)
+    t_l_p(amm, l, p)
 
 Balances at the given invariant l and price p. 
 
@@ -70,7 +67,7 @@ function t_l_p(::AMM, l, p)
 end
 
 """
-    p_l_t(::AMM, l, t)
+    p_l_t(amm, l, t)
 
 Price at the given invariant l and balances t.
 
@@ -81,13 +78,14 @@ function p_l_t(::AMM, l, t)
 end
 
 """
-    l_t(::AMM, t)
+    l_t(amm, t)
 
 Invariant at the given balances t.
 
 Required.
 """
 function l_t(::AMM, t) end
+# TODO ^ This creates a fallback implementation that returns nothing, which probably is not indended.
 
 # TODO implement this for other functions. (I think this is done??)
 # Should be differentiable if possible.
@@ -142,8 +140,8 @@ const trading_curve_from_value_price = tc_v_p
 const trading_curve_from_invariant_price = tc_l_p
 
 """
-  flip(amm)
-  flip(tc)
+    flip(amm)
+    flip(tc)
 
 Flip the x and y assets.
 
@@ -151,8 +149,10 @@ Flipping an AMM changes what the two assets mean. Flipping a TradingCurve yields
 """
 function flip end
 
+public lt_vp
+
 """
-    lt_vp(amm::AMM, v, p)
+    lt_vp(amm, v, p)
 
 Compute the invariant and balances at a given portfolio value (in units of the y asset) and price.
 
@@ -168,10 +168,10 @@ function lt_vp(amm::AMM, v, p)
     return l, t1 .* l
 end
 
-export TradingCurve, TCCommon, t_p, x_y, y_x, t_p, dydp_p
+export TradingCurve, TCCommon, t_p, x_y, y_x, dydp_p
 
 """
-A trading curve. It is expected that this has a field `.common` of type `TCCommon`.
+A trading curve. It is expected that this has a field `.common` of type [`TCCommon`](@ref).
 
 SOMEDAY that's kinda bad actually.
 """
@@ -182,9 +182,9 @@ Base.Broadcast.broadcastable(amm::AMM) = Ref(amm)
 Base.Broadcast.broadcastable(tc::TradingCurve) = Ref(tc)
 
 """
-    t_plus(::TradingCurve)
+    x_plus, y_plus = t_plus(tc)
 
-Maximal x and and y values along the trading curve. Inf if none, respectively.
+Maximal x and and y values along the trading curve. `Inf` if none, respectively.
 
 TODO refactor: this gives an error if not implemented but alphabeta defaults to (0, Inf). Inconsistent. This behavior is prob better.
 """
@@ -209,16 +209,32 @@ x balance given the y balance.
 function x_y end
 
 """
-    y_x
+    y_x(tc, x)
 
 y balance given the x balance.
 """
 function y_x end
 
+"""
+Common fields for trading curves. Every `TradingCurve` has a `.common` member of this type.
+
+SOMEDAY that's not a good design actually.
+
+Fields:
+
+- `amm` - The AMM of the trading curve
+- `l` - The invariant
+- `t_init` - Initial balances
+- `p_init` - Initial price
+"""
 struct TCCommon{A<:AMM}
+    "The AMM of the trading curve"
     amm::A
+    "Invariant"
     l::Float64
+    "Initial balances"
     t_init::Vector{Float64}
+    "Initial price"
     p_init::Float64
 end
 
@@ -238,7 +254,7 @@ function short_str(tc::TradingCurve; as_bp::Bool)
 end
 
 """
-    mk_tc(common) <: TradingCurve
+    mk_tc(common::TCCommon) <: TradingCurve
 
 Create a certain trading curve object from an AMM and common data. Must be specialized to the concrete type of `common`. This is how we capture the relationship from AMMs to TradingCurve's
 
@@ -262,7 +278,7 @@ Relative liquidity density at the given price
 
 NOTE: This is only defined for AMMs where this is fast to compute. Don't use this for plotting; instead, use `sample_dydlogp_p()`.
 """
-function dydlogp_p end
+dydlogp_p(tc, p) = dydp_p(tc, p) * p
 
 """
     sample_dydp_p(tc)

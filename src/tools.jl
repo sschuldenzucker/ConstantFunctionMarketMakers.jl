@@ -3,6 +3,7 @@ export union_priceset, intersect_priceset
 
 """
     union_priceset(amms) :: Vector{Tuple{Float64,Float64}}
+    union_priceset(tcs)
 
 Return the union of the price sets of a set of AMMs as a minimal union of intervals. Can be used with both AMMs and TCs.
 """
@@ -11,6 +12,7 @@ union_priceset(amm::Union{AMM,TradingCurve}) = [alphabeta(amm)]
 
 """
     intersect_priceset(amms) :: Union{Nothing,Tuple{Float64,Float64}}
+    intersect_priceset(tcs)
 
 Return the intersection of the price sets of a set of AMMs. Returns Nothing if the AMMs don't intersect. Can be used with both AMMs and TCs.
 """

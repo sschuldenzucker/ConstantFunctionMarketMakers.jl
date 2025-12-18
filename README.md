@@ -7,6 +7,8 @@ Constant function market makers, as used on blockchains.
 This lets you plot some liquidity density curves for different AMMs:
 
 ```julia
+using ConstantFunctionMarketMakers
+
 amms = [
     ECLP(1-50e-4, 1+50e-4, 1-10e-4, 1000),
     C2LP(1-30e-4, 1+40e-4),
@@ -16,6 +18,8 @@ amms = [
   	CPSMM(0.9985) |> rate_scale(1.003, 1.0),
 ]
 tcs = tc_v_p.(amms, 1e6, 1.0)
+
+using Plots
 
 p = plot()
 for tc in tcs
@@ -49,4 +53,11 @@ Calculations are analytical where possible but some AMMs use numerical search fo
 - Any kind of support for fees.
 - Maybe support for mutable balances. Right now, everything is immutable and to adjust balances or rates, one creates a new trading curve. This could be inconvenient for larger iterations. (may not be worth it)
 
+# License
+
+MIT
+
+# Development
+
+We use the standard julia dependency management.
 

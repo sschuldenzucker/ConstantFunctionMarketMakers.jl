@@ -51,12 +51,18 @@ end  # module C2LPMath
 
 import .C2LPMath
 
-"""
-2CLP, aka concentrated constant-product, aka a single Uniswap v3 bracket
+@doc raw"""
+    C2LP(alpha, beta)
 
-follows the equation \$(x + a) * (y + b) = L^2\$
+Gyroscope 2CLP, aka concentrated constant-product, aka a single Uniswap v3 bracket.
 
-where \$a = l / sqrt(beta)\$ and \$b = l dot sqrt(alpha)\$.
+```math
+(x + a) \cdot (y + b) = L^2
+```
+
+where $a = l / \sqrt{\beta}$ and $b = l \cdot \sqrt{\alpha}$.
+
+See also the [Gyroscope docs](https://docs.gyro.finance/pools/2-clps.html).
 """
 struct C2LP <: AMM
     params::C2LPMath.Params

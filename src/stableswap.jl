@@ -5,7 +5,15 @@ export StableSwap, StableSwapTradingCurve
 
 # TODO rename AMM to CFMM to match the paper.
 """
-NOTE: Only 2 assets are supported right now and also assumed.
+    StableSwap(A)
+
+StableSwap curve.
+
+Here A is the amplification factor.
+
+Note: Only 2 assets are supported right now and also assumed.
+
+Note: The StableSwap paper has an inconsistency vs Curve's (and most) implementations in its treatment of the amplification parameter A. In this library, all user-facing operations (construction and display) use the "code form". Internally, we use the "math form".
 """
 struct StableSwap <: AMM
     a::Float64

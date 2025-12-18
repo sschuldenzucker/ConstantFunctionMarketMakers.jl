@@ -3,10 +3,10 @@ export rate_scale, RateScaledAMM, RateScaledTradingCurve, constant_rate_scaled_e
 # Convenience helper for piping
 # SOMEDAY make it operate on TCs, too? Cf. concentrate(). Not super clear what the right basis is, maybe t_init??
 """
-    rate_scale(amm, rx, ry)
+    rate_scale(amm, rx, ry) <: AMM
     amm |> rate_scale(rx, ry)
 
-Return a new AMM, which is the given AMM scaled by the given rates.
+A given AMM scaled by the given rates.
 """
 rate_scale(amm::AMM, rx, ry) = RateScaledAMM(amm, rx, ry)
 rate_scale(rx, ry) = x -> rate_scale(x, rx, ry)
@@ -161,7 +161,7 @@ end
 
 # Application: Rate-scaled ECLP
 """
-    constant_rate_scaled_eclp(alpha, beta, q; q_inner_override)  
+    constant_rate_scaled_eclp(alpha, beta, q; q_inner)  
 
 Define a rate-scaled ECLP scaled by a constant rate. `alpha`, `beta`, and `q` refer to "outer"
 prices. The inner parameters will be chosen such that these outer prices are exhibited, and

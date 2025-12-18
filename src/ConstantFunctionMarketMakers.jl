@@ -6,9 +6,7 @@ export AMM,
     flip,
     t_l_p,
     p_l_t,
-    residual,
     l_t,
-    mk_tc,
     tc_t,
     tc_v_p,
     tc_l_p,
@@ -26,6 +24,9 @@ export AMM,
     v_init,
     dydp_max,
     dydlogp_max
+
+public mk_tc,
+    residual
 
 using LinearAlgebra
 # SOMEDAY for even more performance (but prob doesn't matter)

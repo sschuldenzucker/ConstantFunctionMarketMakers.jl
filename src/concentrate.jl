@@ -1,8 +1,9 @@
 
 export concentrate, ConcentratedAMM, ConcentratedTradingCurve
 
+# TODO inconsistent how this works for trading curves but e.g. rate_scale does not. Or is this the only one where this makes actual sense?
 """
-    concentrate(amm, alpha, beta)
+    concentrate(amm, alpha, beta) <: AMM
     concentrate(tc, alpha, beta)
     amm |> concentrate(alpha, beta)
     tc |> concentrate(alpha, beta)

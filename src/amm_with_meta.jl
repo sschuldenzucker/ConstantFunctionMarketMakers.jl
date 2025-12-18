@@ -1,5 +1,5 @@
 
-export PlotMeta, AMMWithMeta, TradingCurveWithMeta, set_name, named
+export PlotMeta, AMMWithMeta, TradingCurveWithMeta, named
 
 struct PlotMeta
     name::Union{Nothing,String}
@@ -69,6 +69,12 @@ _dydlogp_max(tc::TradingCurveWithMeta, alpha, beta; pathological) =
     _dydlogp_max(tc.inner, alpha, beta; pathological)
 
 # Convenience method
+"""
+    named(amm, name) <: AMM
+    amm |> named(name)
+
+Attach a custom name to an AMM
+"""
 named(amm::AMM, name::String) = AMMWithMeta(amm, PlotMeta(name))
 named(amm::AMMWithMeta{PlotMeta,A}, name) where {A} = @set amm.meta.name = name
 named(name::String) = amm -> named(amm, name)

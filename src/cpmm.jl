@@ -1,7 +1,13 @@
 export CPMM, CPMMTradingCurve
 
-"""
-Constant-product AMM
+@doc raw"""
+    CPMM()
+
+Constant-product AMM.
+
+```math
+x \cdot y = L^2
+```
 """
 struct CPMM <: AMM end
 

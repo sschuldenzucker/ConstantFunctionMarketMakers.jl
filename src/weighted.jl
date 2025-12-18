@@ -1,10 +1,16 @@
 
 export WeightedPool, WeightedPoolTradingCurve
 
-"""
-A weighted product pool (like Balancer's weighted pool), following \$x^delta * y^(1-delta) = L\$.  
+@doc raw"""
+    WeightedPool(delta)
 
-This is equivalent to the CPMM at delta = 0.5.
+A weighted product pool (i.e., Balancer's weighted pool).
+
+```math
+x^\delta * y^{1-\delta} = L  
+```
+
+The delta parameter describes the weighting towards either asset. delta = 0.5 is equivalent to the [`CPMM`](@ref).
 
 delta must be strictly between 0 and 1.
 """
