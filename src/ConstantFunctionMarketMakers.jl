@@ -56,7 +56,6 @@ include("weighted.jl")
 include("cpsmm.jl")
 
 # TODO constant ld and constant relative LD
-# TODO flip operation (view from the other side) - Should this be an AMM wrapper or a change in parameters? I guess either, depending on the AMM.
 
 # External (exported) tools
 include("tools.jl")

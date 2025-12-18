@@ -4,6 +4,8 @@ export concentrate, ConcentratedAMM, ConcentratedTradingCurve
 """
     concentrate(amm, alpha, beta)
     concentrate(tc, alpha, beta)
+    amm |> concentrate(alpha, beta)
+    tc |> concentrate(alpha, beta)
 
 Concentrate the given AMM or TradingCurve into a sub-range. This corresponds to (TOOD Theorem ref). `(alpha, beta)` must be a sub-interval of the price range.
 

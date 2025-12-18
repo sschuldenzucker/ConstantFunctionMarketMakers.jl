@@ -5,16 +5,26 @@ Corresponds to the "CFMM" concept in the liquidity density paper.
 Expected Interface:
 - `kind_name(self)::str`
 - `short_str(self, as_bp::bool)::str`
+TODO ^^^
 """
 abstract type AMM end
 
 """
+    kind_name(amm)
+    kind_name(tc)
+
 Name of the AMM type (without parameters)
+
+Optional.
 """
 kind_name(::T) where {T<:AMM} = string(nameof(T))
 
 """
+    display_params(::AMM; as_bp::Bool)
+
 Must return a list of pairs of strings, for display only. Used in the default implementation of `short_str()`.
+
+Required.
 """
 display_params(::AMM; as_bp::Bool) = []
 
@@ -22,10 +32,15 @@ display_params(::AMM; as_bp::Bool) = []
 render_display_params(params) = join(["$k=$v" for (k, v) in params], ", ")
 
 """
-Short description of the AMM with parameters. If `as_bp=True`, render all prices in bp.
+    short_str(amm; as_bp::Bool)
+    short_str(tc; as_bp::Bool)
+
+Short description of the AMM with parameters. If `as_bp=true`, render all prices in bp.
+
+Optional, rarely needs an overload
 """
-# SOMEDAY I think this should actually asked for another method that returns a list of params in a simpler way. That other method can then be overwritten.
 function short_str(amm::AMM; as_bp::Bool)
+    # SOMEDAY I think this should actually asked for another method that returns a list of params in a simpler way. That other method can then be overwritten.
     params = display_params(amm; as_bp = as_bp)
     params_str = render_display_params(params)
     name = kind_name(amm)
@@ -33,34 +48,77 @@ function short_str(amm::AMM; as_bp::Bool)
 end
 
 """
-The lower and upper end of the price range, or (0.0, Inf)
-"""
-function alphabeta end
+    alpha, beta = alphabeta(amm)
+    alpha, beta = alphabeta(tc)
 
-# The defaults are full range. AMMs need to override this if not.
+The lower and upper end of the price range, or (0.0, Inf).
+
+Required for AMMs with concentrated price range.
+"""
 alphabeta(::AMM) = (0.0, Inf)
+# The defaults are full range. AMMs need to override this if not.
 
 """
-`t_l_p(<:AMM, l, p)` returns the balances at the given invariant l and price p. 
+    t_l_p(::AMM, l, p)
+
+Balances at the given invariant l and price p. 
+
+Required.
 """
-function t_l_p end
+function t_l_p(::AMM, l, p)
+    error("Abstract base method")
+end
 
-function p_l_t end
+"""
+    p_l_t(::AMM, l, t)
 
-function l_t end
+Price at the given invariant l and balances t.
 
-# TODO implement this for other functions.
+Required.
+"""
+function p_l_t(::AMM, l, t)
+    error("Abstract base method")
+end
+
+"""
+    l_t(::AMM, t)
+
+Invariant at the given balances t.
+
+Required.
+"""
+function l_t(::AMM, t) end
+
+# TODO implement this for other functions. (I think this is done??)
 # Should be differentiable if possible.
 # NB The default implementation could be `l_t(t) - l` but this is usually not efficient.
 # This is _not_ non-negative. Square it or use abs if you need that.
+"""
+    residual(amm, l, t)
+    residual(tc, t)
+
+Invariant residual at the given invariant l and balances t. This is 0 iff t is on the given trading curve.
+
+TODO Required? Should be differentiable.
+"""
 function residual end
 
+"""
+    tc_t(amm::AMM, t) <: TradingCurve
+
+Trading curve of an AMM at the given balances t.
+"""
 function tc_t(amm::AMM, t)
     l = l_t(amm, t)
     p0 = p_l_t(amm, l, t)
     mk_tc(TCCommon(amm, l, t, p0))
 end
 
+"""
+    tc_v_p(amm::AMM, v, p)
+
+Trading curve of an AMM at the given portfolio value v and price p.
+"""
 function tc_v_p(amm::AMM, v, p0)
     l, t = lt_vp(amm, v, p0)
     mk_tc(TCCommon(amm, l, t, p0))
@@ -68,6 +126,11 @@ end
 
 # NB the trading curve itself doesn't need the price but it has a p0 member.
 # Maybe it shouldn't or it should be optional, idk.
+"""
+    tc_l_p(amm::AMM, l, p)
+
+Trading curve of an AMM at the given invariant l and price p
+"""
 function tc_l_p(amm::AMM, l, p0)
     t = t_l_p(amm, l, p0)
     mk_tc(TCCommon(amm, l, t, p0))
@@ -89,6 +152,8 @@ Flipping an AMM changes what the two assets mean. Flipping a TradingCurve yields
 function flip end
 
 """
+    lt_vp(amm::AMM, v, p)
+
 Compute the invariant and balances at a given portfolio value (in units of the y asset) and price.
 
 The fallback implementation requires `t_l_p` and scales the invariant from L=1.
@@ -116,15 +181,38 @@ abstract type TradingCurve end
 Base.Broadcast.broadcastable(amm::AMM) = Ref(amm)
 Base.Broadcast.broadcastable(tc::TradingCurve) = Ref(tc)
 
-function t_plus end
+"""
+    t_plus(::TradingCurve)
+
+Maximal x and and y values along the trading curve. Inf if none, respectively.
+
+TODO refactor: this gives an error if not implemented but alphabeta defaults to (0, Inf). Inconsistent. This behavior is prob better.
+"""
+t_plus(::TradingCurve) = error("Abstract base method")
 
 kind_name(tc::TradingCurve) = kind_name(tc.common.amm)
 
+"""
+    t_p(tc::TradingCurve, p)
+
+Balances at given price p
+"""
 t_p(tc::TradingCurve, p) = t_l_p(tc.common.amm, tc.common.l, p)
 
 alphabeta(tc::TradingCurve) = alphabeta(tc.common.amm)
 
+"""
+    x_y(tc, y)
+
+x balance given the y balance.
+"""
 function x_y end
+
+"""
+    y_x
+
+y balance given the x balance.
+"""
 function y_x end
 
 struct TCCommon{A<:AMM}
@@ -134,6 +222,12 @@ struct TCCommon{A<:AMM}
     p_init::Float64
 end
 
+"""
+    v_init(common::TCCommon)
+    v_init(tc)
+
+Portfolio value / TVL denominated in y asset units, at pool initialization
+"""
 v_init(common::TCCommon) = dot(common.t_init, [common.p_init, 1.0])
 v_init(tc::TradingCurve) = v_init(tc.common)
 
@@ -144,13 +238,31 @@ function short_str(tc::TradingCurve; as_bp::Bool)
 end
 
 """
-    mk_tc(common, ...) <: TradingCurve
+    mk_tc(common) <: TradingCurve
 
-Trait-like function to create a certain trading curve object from an AMM and common data. Must be specialized to the concrete type of `common` 
+Create a certain trading curve object from an AMM and common data. Must be specialized to the concrete type of `common`. This is how we capture the relationship from AMMs to TradingCurve's
 
-SOMEDAY this doesn't actually need its `amm` parameter anymore b/c common.amm stores it and it's type-specialized now.
+Required.
 """
 mk_tc(::TCCommon) = error("Abstract base method.")
+
+"""
+    dydp_p(tc, p)
+
+Absolute liquidity density at the given price
+
+NOTE: This is only defined for AMMs where this is fast to compute. Don't use this for plotting; instead, use `sample_dydp_p()`.
+"""
+function dydp_p end
+
+"""
+    dydlogp_p(tc, p)
+
+Relative liquidity density at the given price
+
+NOTE: This is only defined for AMMs where this is fast to compute. Don't use this for plotting; instead, use `sample_dydlogp_p()`.
+"""
+function dydlogp_p end
 
 """
     sample_dydp_p(tc)
@@ -203,7 +315,7 @@ _sample_dydlogp_p(tc::TradingCurve, alpha, beta) =
     sample_adaptive(p -> dydp_p(tc, p) * p, alpha, beta)
 
 """
-    dydp_max(tc::TradingCurve; plim=(0.0, Inf)) :: Tuple{Float64,Float64}
+    dydp_max(tc; plim=(0.0, Inf)) :: Tuple{Float64,Float64}
 
 (price, value) of the maximal value of dydp (absolute liquidity density), optionally within the
 interval `plim`. If `plim` is not a subset of the price set, the intersection is taken.

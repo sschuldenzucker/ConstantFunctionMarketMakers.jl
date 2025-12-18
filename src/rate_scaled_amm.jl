@@ -2,6 +2,12 @@ export rate_scale, RateScaledAMM, RateScaledTradingCurve, constant_rate_scaled_e
 
 # Convenience helper for piping
 # SOMEDAY make it operate on TCs, too? Cf. concentrate(). Not super clear what the right basis is, maybe t_init??
+"""
+    rate_scale(amm, rx, ry)
+    amm |> rate_scale(rx, ry)
+
+Return a new AMM, which is the given AMM scaled by the given rates.
+"""
 rate_scale(amm::AMM, rx, ry) = RateScaledAMM(amm, rx, ry)
 rate_scale(rx, ry) = x -> rate_scale(x, rx, ry)
 
