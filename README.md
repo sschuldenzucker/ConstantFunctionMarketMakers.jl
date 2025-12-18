@@ -35,7 +35,7 @@ There are two main abstract supertypes:
 
 1. An `AMM` is the abstract configuration of a CFMM. Mathematically, this is just a function $F: \mathbb{R}^2 \to \mathbb{R}$ where the level sets are the trading curves, but computationally, it's not.
 
-2. A `TradingCurve` is a specific trading curve of an AMM, together with an initial point on the curve. Mathematically, this is defined by an invariant $L$ plus a price $p$ and then the curve is equal to $F^(-1)(L)$, but computationally, there is more data.
+2. A `TradingCurve` is a specific trading curve of an AMM, together with an initial point on the curve. Mathematically, this is defined by an invariant $L$ plus a price $p$ and then the curve is equal to $F^{-1}(L)$, but computationally, there is more data.
 
 All of these are immutable and composable. Specifically, you can take an AMM and run `concentrate(amm, alpha1, beta1)` to receive a new AMM that is concentrated into a sub-range of prices or `rate_scale(amm, rx, ry)` to receive an AMM that is rate-scaled by certain rates on its balances.
 
