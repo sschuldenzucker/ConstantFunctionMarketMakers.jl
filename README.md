@@ -1,5 +1,7 @@
 # ConstantFunctionMarketMakers.jl
 
+[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://schuldenzucker.com/ConstantFunctionMarketMakers.jl/)
+
 Constant function market makers, as used on blockchains.
 
 # Quickstart
