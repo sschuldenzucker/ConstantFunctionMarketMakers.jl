@@ -61,6 +61,8 @@ MIT
 
 We use the standard julia dependency management.
 
-Docs have their own environment in `doc/` and import the toplevel package as a dev dependency. Docs are currently not built automatically b/c I can't be bothered. Use `just deploydocs` from a clean main state to make the computer go through the process for you.
+Docs have their own environment in `doc/` and import the toplevel package as a dev dependency. Use `just makedocs` to build them. They are auto-deployed via github pages. The github pages root is `docs/`, which is symlinked to `doc/build/`. Documenter says not to do this b/c it pollutes PR history but I can't be bothered rn.
+
+NB There is currently no tracking for released vs dev versions, generally versions of this library, etc. etc. SOMEDAY those would all be quite nice to have and that's that.
 
 
