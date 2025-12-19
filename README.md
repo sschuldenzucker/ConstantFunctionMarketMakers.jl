@@ -10,6 +10,7 @@ This lets you plot some liquidity density curves for different AMMs:
 
 ```julia
 using ConstantFunctionMarketMakers
+using Plots
 
 amms = [
     ECLP(1-50e-4, 1+50e-4, 1-10e-4, 1000),
@@ -17,19 +18,28 @@ amms = [
     StableSwap(400) |> concentrate(1-50e-4, 1+50e-4),
     CPMM(),
     CPSMM(0.9985),
-  	CPSMM(0.9985) |> rate_scale(1.003, 1.0),
+    CPSMM(0.9985) |> rate_scale(1.003, 1.0),
 ]
 tcs = tc_v_p.(amms, 1e6, 1.0)
 
-using Plots
+plim = (1-60e-4, 1+60e-4)
 
-p = plot()
+pl = plot()
 for tc in tcs
   points = sample_dydp_p(tc; plim, unit=1e-4)
-  plot!(p, points, label=short_str(tc; as_bp=true))
+  plot!(
+    pl,
+    points;
+    label=short_str(tc; as_bp=true),
+    linewidth=3,
+    ylabel=raw"LD (USD / ±0.0001)",
+    xlabel="Price")
 end
-p
+pl
 ```
+
+<!-- TODO image path is unstable (content hash) -->
+![](docs/index-8956fa41.svg)
 
 # Data Structures
 
