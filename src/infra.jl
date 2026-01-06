@@ -149,7 +149,8 @@ Flipping an AMM changes what the two assets mean. Flipping a TradingCurve yields
 """
 function flip end
 
-public lt_vp
+# SOMEDAY LSP doesn't like this & crashes :(
+# public lt_vp
 
 """
     lt_vp(amm, v, p)

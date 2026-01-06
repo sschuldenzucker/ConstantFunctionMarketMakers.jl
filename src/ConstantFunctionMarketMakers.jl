@@ -25,8 +25,9 @@ export AMM,
     dydp_max,
     dydlogp_max
 
-public mk_tc,
-    residual
+# SOMEDAY LSP doesn't like this & crashes :(
+# public mk_tc,
+#     residual
 
 using LinearAlgebra
 # SOMEDAY for even more performance (but prob doesn't matter)
