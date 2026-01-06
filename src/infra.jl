@@ -316,7 +316,7 @@ mk_tc(::TCCommon) = error("Abstract base method.")
 
 Absolute liquidity density at the given price
 
-NOTE: This is only defined for AMMs where this is fast to compute. Don't use this for plotting; instead, use `sample_dydp_p()`.
+NOTE: This is slow for StableSwap. Don't use this for plotting; instead, use `sample_dydp_p()`.
 """
 function dydp_p end
 
@@ -325,7 +325,7 @@ function dydp_p end
 
 Relative liquidity density at the given price
 
-NOTE: This is only defined for AMMs where this is fast to compute. Don't use this for plotting; instead, use `sample_dydlogp_p()`.
+NOTE: This is slow for StableSwap. Don't use this for plotting; instead, use `sample_dydlogp_p()`.
 """
 dydlogp_p(tc, p) = dydp_p(tc, p) * p
 
