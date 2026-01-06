@@ -17,7 +17,7 @@ alphabeta(tc::SumTradingCurve) = envelop_priceset(tc.tcs)
 flip(tc::SumTradingCurve) = SumTradingCurve(flip.(tc.tcs))
 
 # Component-wise sum
-t_plus(tc::SumTradingCurve) = foldl((a, b) -> a .+ b, alphabeta.(tc.tcs); init = (0, 0))
+t_plus(tc::SumTradingCurve) = foldl((a, b) -> a .+ b, t_plus.(tc.tcs); init = (0, 0))
 
 # NOTE: These are gonna be slow for StableSwap but there's not much I can do: summing _fundamentally_ works across prices!
 
@@ -68,7 +68,7 @@ function p_x(tc::SumTradingCurve, x)
     f(p) = x - x_p(tc, p)
 
     a, b = _make_bracket_nondegenerate(f, alpha, beta)
-    find_root(f, (a, b), Roots.A42())
+    find_zero(f, (a, b), Roots.A42())
 end
 
 function p_y(tc::SumTradingCurve, y)
@@ -85,7 +85,7 @@ function p_y(tc::SumTradingCurve, y)
     f(p) = y_p(tc, p) - y
 
     a, b = _make_bracket_nondegenerate(f, alpha, beta)
-    find_root(f, (a, b), Roots.A42())
+    find_zero(f, (a, b), Roots.A42())
 end
 
 x_y(tc::SumTradingCurve, y) = x_p(tc, p_y(tc, y))
