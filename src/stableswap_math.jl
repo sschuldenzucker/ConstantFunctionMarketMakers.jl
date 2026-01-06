@@ -96,6 +96,19 @@ function p_y_gen(a, l, y)
     -ForwardDiff.derivative(x -> y_x_gen(a, l, x), x)
 end
 
+function p_x_gen(a, l, x)
+    # Special cases, not sure these are gonna be useful.
+    if x == 0.0
+        return Inf
+    end
+    if x == Inf
+        return 0.0
+    end
+
+    @debug "p_x_gen evaluation" x
+    -ForwardDiff.derivative(x -> y_x_gen(a, l, x), x)
+end
+
 # dydp(y) = 1 / dpdy(y)
 # SOMEDAY is this kinda slow?
 dydp_y_gen(a, l, y) = 1.0 / ForwardDiff.derivative(y -> p_y_gen(a, l, y), y)

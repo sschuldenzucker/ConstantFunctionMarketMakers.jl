@@ -65,17 +65,19 @@ include("tools.jl")
 # AMM extensions
 include("rate_scaled_amm.jl")
 include("amm_with_meta.jl")
+include("concentrate.jl")
+
+# Trading Curve extensions
+include("sum_trading_curve.jl")
 
 # Algorithms
-include("concentrate.jl")
 
 # TODO and all of the other tools as well (sampling, plotting after sampling, handling StableSwap vs ECLP, handling bounds suggestions)
 #
 # For plotting and sampling, I'll need a trait specifying how to get the LD (dydp_p or dydp_y for StableSwap). This can default to hasmethod(dydp_p) but needs to be hand-written for the RateScaledAMM. Also ill-defined for (e.g.) sums of curves. Maybe we want a higher-level structure.
 
 # TODO more types:
-# - TradingCurve as a sum of TCs. Maybe CFMM as a sum of CFMMs (I guess). The use case here is combining LD curves, parallel pools, and (as a special case of that) Uni v3 TCs (TradingCurve only, CFMM not defined).
-# - Trading through a chain of pools. (this is a bit unclear)
+# - Trading through a chain of pools, and a network. (this is a bit unclear)
 
 # --------------------------------------
 # Late Infra

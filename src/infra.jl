@@ -182,6 +182,7 @@ Any trading curve.
 ## Additional required interface for `TradingCurve`s that are _not_ `CommonTradingCurve`s
 
 - `t_p`
+- `alphabeta`
 
 ### Optional
 
@@ -191,6 +192,9 @@ Any trading curve.
 - `_sample_dydlogp_p`
 - `dydp_p`
 - `dydp_y`
+- `x_y`
+- `y_x`
+- `t_p`
 """
 abstract type TradingCurve end
 
@@ -229,6 +233,9 @@ TODO refactor: this gives an error if not implemented but alphabeta defaults to 
 """
 t_plus(::TradingCurve) = error("Abstract base method")
 
+x_plus(tc::TradingCurve) = t_plus(tc)[1]
+y_plus(tc::TradingCurve) = t_plus(tc)[2]
+
 kind_name(tc::CommonTradingCurve) = kind_name(get_common(tc).amm)
 
 """
@@ -238,7 +245,12 @@ Balances at given price p
 """
 t_p(tc::CommonTradingCurve, p) = t_l_p(get_common(tc).amm, get_common(tc).l, p)
 
+x_p(tc::TradingCurve, p) = t_p(tc, p)[1]
+y_p(tc::TradingCurve, p) = t_p(tc, p)[2]
+
 alphabeta(tc::CommonTradingCurve) = alphabeta(get_common(tc).amm)
+
+is_in_range(tc::TradingCurve, p) = Util.is_in_interval(p, alphabeta(tc))
 
 """
     x_y(tc, y)
@@ -434,6 +446,18 @@ function _dydlogp_max(tc::TradingCurve, alpha, beta; pathological)
     (res.minimizer, -res.minimum)
 end
 
-flip(tc::CommonTradingCurve) = tc_t(flip(get_common(tc).amm), reverse(get_common(tc).t_init))
+"""
+    sample_y_x(tc::TradingCurve, xmin, xmax=t_plus(tc)[1])
+
+Sample `y_x` within the given x range. Returns a vector of pairs.
+
+The default implementation simply samples `y_x` in a non-parametric way.
+"""
+function sample_y_x(tc::TradingCurve; xmin, xmax = x_plus(tc))
+    sample_adaptive(x -> y_x(tc, x), xmin, xmax)
+end
+
+flip(tc::CommonTradingCurve) =
+    tc_t(flip(get_common(tc).amm), reverse(get_common(tc).t_init))
 
 residual(tc::CommonTradingCurve, t) = residual(get_common(tc).amm, get_common(tc).l, t)

@@ -64,19 +64,30 @@ x_y(tc::StableSwapTradingCurve, y) = StableSwapMath.x_y_gen(tc.common.amm.a, tc.
 y_x(tc::StableSwapTradingCurve, x) = StableSwapMath.y_x_gen(tc.common.amm.a, tc.common.l, x)
 # y_x(tc::StableSwapTradingCurve, x) = tc._cache.y_x(x)
 
-# Special for StableSwap
+p_x(tc::StableSwapTradingCurve, x) = StableSwapMath.p_x_gen(tc.common.amm.a, tc.common.l, x)
+
+# This one is important! Stableswap has fast evaluation based on y, not based on p.
 p_y(tc::StableSwapTradingCurve, y) = StableSwapMath.p_y_gen(tc.common.amm.a, tc.common.l, y)
 # dydp_y(tc::StableSwapTradingCurve, y) = tc._cache.dydp_y(y)
 dydp_y(tc::StableSwapTradingCurve, y) =
     StableSwapMath.dydp_y_gen(tc.common.amm.a, tc.common.l, y)
 
-# NB this function is not very fast. You prob don't wanna use it in a loop but sample y instead.
-# SOMEDAY do we need it?
-# t_p(tc::StableSwapTradingCurve, p) = StableSwapMath.find_t_l_p(tc._cache, tc.common.l, p)
+t_plus(tc::StableSwapTradingCurve) = (Inf, Inf)
+
+# SLOW FUNCTIONS AHEAD, only use when needed. Otherwise, sample based on y.
+
+"""
+The implementation for stableswap is not very fast when based on `p`. Use `y` for sampling whenever possible.
+"""
 t_p(tc::StableSwapTradingCurve, p) =
     StableSwapMath.find_t_l_p(tc.common.amm.a, tc.common.l, p)
 
-t_plus(tc::StableSwapTradingCurve) = (Inf, Inf)
+"""
+The implementation for stableswap is not very fast when based on `p`. Use `y` for sampling whenever possible or use specialized sampling functions.
+"""
+dydp_p(tc::StableSwapTradingCurve, p) = dydp_y(tc, y_p(tc, p))
+
+# These sampling functions are fast again.
 
 function _sample_dydp_p(tc::StableSwapTradingCurve, alpha, beta)
     f(y) = (p_y(tc, y), dydp_y(tc, y))

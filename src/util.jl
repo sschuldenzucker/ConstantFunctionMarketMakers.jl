@@ -71,4 +71,6 @@ intersect_intervals(a, b) = (max(a[1], b[1]), min(a[2], b[2]))
 
 is_subinterval(a, b) = a[1] >= b[1] && a[2] <= b[2]
 
+is_in_interval(x, (a, b)) = a <= x <= b
+
 end
