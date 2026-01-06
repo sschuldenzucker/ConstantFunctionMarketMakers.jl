@@ -26,7 +26,7 @@ p_l_t(::CPMM, l, t) =
 
 mk_tc(common::TCCommon{CPMM}) = CPMMTradingCurve(common)
 
-struct CPMMTradingCurve <: TradingCurve
+struct CPMMTradingCurve <: CommonTradingCurve
     common::TCCommon{CPMM}
 end
 

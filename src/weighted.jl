@@ -47,7 +47,7 @@ end
 
 mk_tc(common::TCCommon{WeightedPool}) = WeightedPoolTradingCurve(common)
 
-struct WeightedPoolTradingCurve <: TradingCurve
+struct WeightedPoolTradingCurve <: CommonTradingCurve
     common::TCCommon{WeightedPool}
 end
 

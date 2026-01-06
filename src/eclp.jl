@@ -58,7 +58,7 @@ function mk_tc(common::TCCommon{ECLP})
     ECLPTradingCurve(common, ECLPMath.t_plus(params, common.l))
 end
 
-struct ECLPTradingCurve <: TradingCurve
+struct ECLPTradingCurve <: CommonTradingCurve
     common::TCCommon{ECLP}
 
     # Cached results

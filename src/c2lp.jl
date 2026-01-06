@@ -92,7 +92,7 @@ p_l_t(amm::C2LP, l, t) = C2LPMath.p_l_t(amm.params, l, t)
 
 mk_tc(common::TCCommon{C2LP}) = C2LPTradingCurve(common)
 
-struct C2LPTradingCurve <: TradingCurve
+struct C2LPTradingCurve <: CommonTradingCurve
     common::TCCommon{C2LP}
 end
 

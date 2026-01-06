@@ -55,7 +55,7 @@ function mk_tc(common::TCCommon{StableSwap})
     StableSwapTradingCurve(common)
 end
 
-struct StableSwapTradingCurve <: TradingCurve
+struct StableSwapTradingCurve <: CommonTradingCurve
     common::TCCommon{StableSwap}
     # _cache::StableSwapMath.Cache
 end

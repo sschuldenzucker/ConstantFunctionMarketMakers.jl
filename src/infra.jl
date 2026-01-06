@@ -169,14 +169,52 @@ function lt_vp(amm::AMM, v, p)
     return l, t1 .* l
 end
 
-export TradingCurve, TCCommon, t_p, x_y, y_x, dydp_p
+export TradingCurve, CommonTradingCurve, TCCommon, t_p, x_y, y_x, dydp_p
 
 """
-A trading curve. It is expected that this has a field `.common` of type [`TCCommon`](@ref).
+Any trading curve.
 
-SOMEDAY that's kinda bad actually.
+## Required interface
+
+- `t_plus`
+- `short_str`
+
+## Additional required interface for `TradingCurve`s that are _not_ `CommonTradingCurve`s
+
+- `t_p`
+
+### Optional
+
+- `flip`
+- `kind_name`
+- `_sample_dydp_p`
+- `_sample_dydlogp_p`
+- `dydp_p`
+- `dydp_y`
 """
 abstract type TradingCurve end
+
+# SOMEDAY should TradingCurve be called Pool? Or should TradingCurve + initial point be called Pool?
+
+"""
+A trading curve that can be canonically described as a level set of an AMM.
+
+The keyword is "canonically" here: _any_ trading curve can be mathematically framed as a level set of an AMM by just completing it into one (AMMs are equivalent to space-covering collections of trading curves and we can make the extension "linear" to even receive a _homogeneous_ AMM). However, some trading curve constructions cannot easily be described as AMM level sets in a canonical way.
+
+Trading curves of all "normal" AMMs we usually talk about (e.g., CPMM, ECLP) are canonical. But some trading curve constructions based on other trading curves are not. Examples include sums of parallel AMMs, Uni v3 pools, and chains of trading curve under a balance constraint on the middle asset.
+
+## Required interface
+
+- `get_common()`
+"""
+abstract type CommonTradingCurve <: TradingCurve end
+
+"""
+Get the [`TCCommon`](@ref) of a [`CommonTradingCurve`](@ref).
+
+The default implementation assumes that there is a field `.common` for this, which there usually is.
+"""
+get_common(tc::CommonTradingCurve)::TCCommon = tc.common
 
 # Make AMM and TradingCurve behave like a scalar in broadcasts (useful for syntax)
 Base.Broadcast.broadcastable(amm::AMM) = Ref(amm)
@@ -191,16 +229,16 @@ TODO refactor: this gives an error if not implemented but alphabeta defaults to 
 """
 t_plus(::TradingCurve) = error("Abstract base method")
 
-kind_name(tc::TradingCurve) = kind_name(tc.common.amm)
+kind_name(tc::CommonTradingCurve) = kind_name(get_common(tc).amm)
 
 """
     t_p(tc::TradingCurve, p)
 
 Balances at given price p
 """
-t_p(tc::TradingCurve, p) = t_l_p(tc.common.amm, tc.common.l, p)
+t_p(tc::CommonTradingCurve, p) = t_l_p(get_common(tc).amm, get_common(tc).l, p)
 
-alphabeta(tc::TradingCurve) = alphabeta(tc.common.amm)
+alphabeta(tc::CommonTradingCurve) = alphabeta(get_common(tc).amm)
 
 """
     x_y(tc, y)
@@ -217,9 +255,7 @@ y balance given the x balance.
 function y_x end
 
 """
-Common fields for trading curves. Every `TradingCurve` has a `.common` member of this type.
-
-SOMEDAY that's not a good design actually.
+Common fields for [`CommonTradingCurve`](@ref)s.
 
 Fields:
 
@@ -246,10 +282,10 @@ end
 Portfolio value / TVL denominated in y asset units, at pool initialization
 """
 v_init(common::TCCommon) = dot(common.t_init, [common.p_init, 1.0])
-v_init(tc::TradingCurve) = v_init(tc.common)
+v_init(tc::CommonTradingCurve) = v_init(get_common(tc))
 
-function short_str(tc::TradingCurve; as_bp::Bool)
-    amm_str = short_str(tc.common.amm; as_bp)
+function short_str(tc::CommonTradingCurve; as_bp::Bool)
+    amm_str = short_str(get_common(tc).amm; as_bp)
     pfval_str = fmt_auto(v_init(tc))
     "$amm_str @ \$$pfval_str"
 end
@@ -398,6 +434,6 @@ function _dydlogp_max(tc::TradingCurve, alpha, beta; pathological)
     (res.minimizer, -res.minimum)
 end
 
-flip(tc::TradingCurve) = tc_t(flip(tc.common.amm), reverse(tc.common.t_init))
+flip(tc::CommonTradingCurve) = tc_t(flip(get_common(tc).amm), reverse(get_common(tc).t_init))
 
-residual(tc::TradingCurve, t) = residual(tc.common.amm, tc.common.l, t)
+residual(tc::CommonTradingCurve, t) = residual(get_common(tc).amm, get_common(tc).l, t)

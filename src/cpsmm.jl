@@ -41,7 +41,7 @@ p_l_t(cpsmm::CPSMM, l, t) = ((t[2] / t[1])^(1.0 - cpsmm.delta))
 
 mk_tc(common::TCCommon{CPSMM}) = CPSMMTradingCurve(common)
 
-struct CPSMMTradingCurve <: TradingCurve
+struct CPSMMTradingCurve <: CommonTradingCurve
     common::TCCommon{CPSMM}
 end
 

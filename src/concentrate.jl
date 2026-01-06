@@ -103,7 +103,11 @@ function mk_tc(common::TCCommon{ConcentratedAMM{A}}) where {A}
     ConcentratedTradingCurve(common, mk_tc(common_inner))
 end
 
-struct ConcentratedTradingCurve{A<:AMM,T<:TradingCurve} <: TradingCurve
+# SOMEDAY can we also do this construction on trading curves that are _not_ common?
+# The code here doesn't allow this but it should be possible.
+# TODO also review our math paper re this: is it framed right?
+
+struct ConcentratedTradingCurve{A<:AMM,T<:CommonTradingCurve} <: CommonTradingCurve
     common::TCCommon{ConcentratedAMM{A}}
     inner::T
 end

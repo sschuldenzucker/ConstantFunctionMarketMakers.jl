@@ -45,10 +45,13 @@ function mk_tc(common::TCCommon{AMMWithMeta{M,A}}) where {M,A}
     TradingCurveWithMeta(common, mk_tc(common_inner))
 end
 
+# SOMEDAY now *this* we can do for any trading curve. Problem is that, whether it's a TradingCurve or CommonTradingCurve depends on what T is.
+# We'd need two separate types for this. Which isn't quite wrong.
+
 """
 A TradingCurve with metadata of type `M` attached. Often, `M = PlotMeta`.
 """
-struct TradingCurveWithMeta{M,A<:AMM,T<:TradingCurve} <: TradingCurve
+struct TradingCurveWithMeta{M,A<:AMM,T<:CommonTradingCurve} <: CommonTradingCurve
     common::TCCommon{AMMWithMeta{M,A}}
     inner::T
 end

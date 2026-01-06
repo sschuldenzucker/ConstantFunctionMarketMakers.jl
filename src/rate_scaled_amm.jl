@@ -85,7 +85,11 @@ function mk_tc(common::TCCommon{RateScaledAMM{A}}) where {A}
     RateScaledTradingCurve(common, mk_tc(common_inner))
 end
 
-struct RateScaledTradingCurve{A<:AMM,T<:TradingCurve} <: TradingCurve
+# SOMEDAY can we also do this construction on trading curves that are _not_ common?
+# The code here doesn't allow this but it should be possible.
+# TODO also review our math paper re this: is it framed right?
+
+struct RateScaledTradingCurve{A<:AMM,T<:CommonTradingCurve} <: CommonTradingCurve
     common::TCCommon{RateScaledAMM{A}}
     # Note that the inner AMM is duplicated, once as inner.common.amm, and once as common.amm.inner.
     inner::T
