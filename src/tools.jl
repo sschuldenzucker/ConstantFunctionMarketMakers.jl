@@ -11,6 +11,14 @@ union_priceset(amms) = union_intervals(alphabeta.(amms))
 union_priceset(amm::Union{AMM,TradingCurve}) = [alphabeta(amm)]
 
 """
+    envelop_priceset(amms) :: Tuple{Float64,Float64}
+
+Return the smallest inverval containing the union of all the price sets of the given amms. Can be used with both AMMs and TCs.
+"""
+envelop_priceset(amms) = envelop_intervals(alphabeta.(amms))
+envelop_priceset(amm::Union{AMM,TradingCurve}) = [alphabeta(amm)]
+
+"""
     intersect_priceset(amms) :: Union{Nothing,Tuple{Float64,Float64}}
     intersect_priceset(tcs)
 
@@ -40,6 +48,10 @@ function union_intervals(ivls::Vector{Tuple{T,S}}) where {T<:Real,S<:Real}
     end
     push!(ret, cur)
     ret
+end
+
+function envelop_intervals(ivls::Vector{Tuple{T,S}}) where {T<:Real,S<:Real}
+    minimum(v[1] for v in ivls), maximum(v[2] for v in ivls)
 end
 
 @test union_intervals([(0, 1), (2, 4), (0.5, 3)]) == [(0, 4)]

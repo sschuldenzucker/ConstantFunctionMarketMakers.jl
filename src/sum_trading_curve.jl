@@ -9,9 +9,10 @@ sum_tcs(tcs) = SumTradingCurve(tcs)
 
 kind_name(::SumTradingCurve) = "Sum"
 
-short_str(tc::SumTradingCurve) = join(short_str.(tc.tcs), " + ")
+short_str(tc::SumTradingCurve; as_bp::Bool) = join(short_str.(tc.tcs; as_bp), " + ")
 
-alphabeta(tc::SumTradingCurve) = union_priceset(tc.tcs)
+# TODO not quite right: there can be holes! Needs some work.
+alphabeta(tc::SumTradingCurve) = envelop_priceset(tc.tcs)
 
 flip(tc::SumTradingCurve) = SumTradingCurve(flip.(tc.tcs))
 
