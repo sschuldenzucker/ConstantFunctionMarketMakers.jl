@@ -91,9 +91,7 @@ function p_y_gen(a, l, y)
         return Inf
     end
 
-    x = x_y_gen(a, l, y)
-    @debug "p_y_gen evaluation" y x
-    -ForwardDiff.derivative(x -> y_x_gen(a, l, x), x)
+    -1.0 / ForwardDiff.derivative(y1 -> x_y_gen(a, l, y1), y)
 end
 
 function p_x_gen(a, l, x)
