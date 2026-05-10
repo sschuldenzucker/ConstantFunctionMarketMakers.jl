@@ -183,9 +183,8 @@ function Cache(a, l; n = 2)
     end
     @info "y_x_fml"
     # p_y_fml = 1 / expand_derivatives(Differential(_y)(x_y_fml))
-    p_y_fml = simplify(
-        substitute(-expand_derivatives(Differential(_x)(y_x_fml)), Dict(_x => x_y_fml)),
-    )
+    p_y_fml =
+        simplify(substitute(-expand_derivatives(Differential(_x)(y_x_fml)), Dict(_x => x_y_fml)))
     @info "p_y_fml"
 
     # simplify THIS is the slow one!! (not doing that anymore; not sure if that's bad)
