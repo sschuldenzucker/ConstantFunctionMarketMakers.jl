@@ -13,21 +13,21 @@ Here A is the amplification factor.
 
 Note: Only 2 assets are supported right now and also assumed.
 
-Note: The StableSwap paper has an inconsistency vs Curve's (and most) implementations in its treatment of the amplification parameter A. In this library, all user-facing operations (construction and display) use the "code form". Internally, we use the "math form".
+Note: The StableSwap paper has an inconsistency vs Curve's (and most) implementations in its treatment of the amplification parameter A. In this library, all user-facing operations (construction and display) use the "code form". Internally, we use the "math/paper form".
 """
 struct StableSwap <: AMM
     a::Float64
 
     # We convert between the "code style" of A (used externally) and the "math style" of A (used
     # internally). SOMEDAY that is a bit of a mess and could easily be fixed.
-    # TODO this might actually be pretty broken.
-    StableSwap(a) = new(a / 2)
+    StableSwap(a) = new(a / 2.0)
 end
 
 flip(amm::StableSwap) = amm
 
 function display_params(ss::StableSwap; as_bp::Bool)
-    ["A" => ss.a |> fmt_auto]
+    # 2.0 factor to convert back to the "code form", see above.
+    ["A" => ss.a * 2.0 |> fmt_auto]
 end
 
 alphabeta(::StableSwap) = (0, Inf)
@@ -69,8 +69,7 @@ p_x(tc::StableSwapTradingCurve, x) = StableSwapMath.p_x_gen(tc.common.amm.a, tc.
 # This one is important! Stableswap has fast evaluation based on y, not based on p.
 p_y(tc::StableSwapTradingCurve, y) = StableSwapMath.p_y_gen(tc.common.amm.a, tc.common.l, y)
 # dydp_y(tc::StableSwapTradingCurve, y) = tc._cache.dydp_y(y)
-dydp_y(tc::StableSwapTradingCurve, y) =
-    StableSwapMath.dydp_y_gen(tc.common.amm.a, tc.common.l, y)
+dydp_y(tc::StableSwapTradingCurve, y) = StableSwapMath.dydp_y_gen(tc.common.amm.a, tc.common.l, y)
 
 t_plus(tc::StableSwapTradingCurve) = (Inf, Inf)
 
@@ -79,8 +78,7 @@ t_plus(tc::StableSwapTradingCurve) = (Inf, Inf)
 """
 The implementation for stableswap is not very fast when based on `p`. Use `y` for sampling whenever possible.
 """
-t_p(tc::StableSwapTradingCurve, p) =
-    StableSwapMath.find_t_l_p(tc.common.amm.a, tc.common.l, p)
+t_p(tc::StableSwapTradingCurve, p) = StableSwapMath.find_t_l_p(tc.common.amm.a, tc.common.l, p)
 
 """
 The implementation for stableswap is not very fast when based on `p`. Use `y` for sampling whenever possible or use specialized sampling functions.
